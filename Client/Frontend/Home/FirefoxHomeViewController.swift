@@ -125,6 +125,7 @@ extension HomePanelContextMenu {
 
 class FirefoxHomeViewController: UICollectionViewController, HomePanel {
     weak var homePanelDelegate: HomePanelDelegate?
+    weak var libraryPanelDelegate: LibraryPanelDelegate?
     fileprivate let profile: Profile
     fileprivate let pocketAPI = Pocket()
     fileprivate let flowLayout = UICollectionViewFlowLayout()
@@ -279,7 +280,7 @@ class FirefoxHomeViewController: UICollectionViewController, HomePanel {
             
             if let bookmarks = result.successValue,
                !bookmarks.isEmpty,
-               !BookmarksHelper.filterOldBookmarks(bookmarks: bookmarks, since: 10).isEmpty {
+               !RecentItemsHelper.filterStaleItems(recentItems: bookmarks, since: 10).isEmpty {
                 self.hasRecentBookmarks = true
                 
                 TelemetryWrapper.recordEvent(category: .action,
@@ -630,6 +631,7 @@ extension FirefoxHomeViewController {
         
         let recentlySavedCell = cell as! FxHomeRecentlySavedCollectionCell
         recentlySavedCell.homePanelDelegate = homePanelDelegate
+        recentlySavedCell.libraryPanelDelegate = libraryPanelDelegate
         recentlySavedCell.profile = profile
         recentlySavedCell.collectionView.reloadData()
         recentlySavedCell.setNeedsLayout()
@@ -656,8 +658,6 @@ extension FirefoxHomeViewController: DataObserverDelegate {
             
             // If there is no pending cache update and highlights are empty. Show the onboarding screen
             self.collectionView?.reloadData()
-            self.collectionViewLayout.invalidateLayout()
-            self.collectionView.layoutIfNeeded()
             
             self.topSitesManager.currentTraits = self.view.traitCollection
             
