@@ -112,6 +112,11 @@ extension Date {
 }
 
 extension Date {
+    // Time Interval constants
+    public static let second: Double = 1
+    public static let minute = second * 60
+    public static let hour = minute * 60
+    
     public static var yesterday: Date { return Date().dayBefore }
     public static var tomorrow: Date { return Date().dayAfter }
     public var lastWeek: Date {

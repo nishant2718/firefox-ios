@@ -30,7 +30,10 @@ class TabManagerStore {
     }
 
     var hasTabsToRestoreAtStartup: Bool {
-        return archivedStartupTabs.0.count > 0
+        let timeSinceLastRun = Date(timeIntervalSinceNow: SystemUtils.systemUptime()) // Replace this with a proper way to check against time since last launch
+        let cutoff = Date(timeIntervalSinceNow: Date.hour * -4)
+        
+        return archivedStartupTabs.0.count > 0 && timeSinceLastRun < cutoff
     }
 
     fileprivate func tabsStateArchivePath() -> String? {
@@ -122,13 +125,17 @@ class TabManagerStore {
         }
 
         var tabToSelect: Tab?
-        for savedTab in savedTabs {
-            // Provide an empty request to prevent a new tab from loading the home screen
-            var tab = tabManager.addTab(flushToDisk: false, zombie: true, isPrivate: savedTab.isPrivate)
-            tab = savedTab.configureSavedTabUsing(tab, imageStore: imageStore)
-            if savedTab.isSelected {
-                tabToSelect = tab
+        if hasTabsToRestoreAtStartup {
+            for savedTab in savedTabs {
+                // Provide an empty request to prevent a new tab from loading the home screen
+                var tab = tabManager.addTab(flushToDisk: false, zombie: true, isPrivate: savedTab.isPrivate)
+                tab = savedTab.configureSavedTabUsing(tab, imageStore: imageStore)
+                if savedTab.isSelected {
+                    tabToSelect = tab
+                }
             }
+        } else {
+            tabToSelect = tabManager.addTab()
         }
 
         if tabToSelect == nil {
