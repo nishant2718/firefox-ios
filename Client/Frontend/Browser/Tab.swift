@@ -146,6 +146,18 @@ class Tab: NSObject {
         }
         return self.url
     }
+    
+    var isFxHomeTab: Bool {
+        if let numberOfUrls = self.sessionData?.urls.count,
+           let offset = self.sessionData?.currentPage,
+           let url = self.sessionData?.urls[numberOfUrls - 1 + offset],
+           url.absoluteString.hasPrefix("internal://") {
+            return true
+        }
+        
+        return false
+    }
+
     var mimeType: String?
     var isEditing: Bool = false
     var currentFaviconUrl: URL?

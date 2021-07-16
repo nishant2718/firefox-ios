@@ -385,8 +385,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIViewControllerRestorati
     }
 
     func applicationWillResignActive(_ application: UIApplication) {
-        // update top sites widget
         updateTopSitesWidget()
+        UserDefaults.standard.setValue(Date(), forKey: "LastActiveTimestamp")
     }
 
     func applicationDidEnterBackground(_ application: UIApplication) {

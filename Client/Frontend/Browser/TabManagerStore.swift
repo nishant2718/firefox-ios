@@ -28,6 +28,15 @@ class TabManagerStore {
     var isRestoringTabs: Bool {
         return lockedForReading
     }
+    
+    var shouldOpenHome: Bool {
+        let lastActiveTimestamp = UserDefaults.standard.object(forKey: "LastActiveTimestamp") as? Date ?? Date()
+        let dateComponents = Calendar.current.dateComponents([.hour], from: lastActiveTimestamp, to: Date())
+        let hours = dateComponents.hour ?? 0
+        
+//        return hours > 4
+        return true
+    }
 
     var hasTabsToRestoreAtStartup: Bool {
         return archivedStartupTabs.0.count > 0
@@ -123,6 +132,7 @@ class TabManagerStore {
         }
 
         var tabToSelect: Tab?
+        var fxHomeTab: Tab?
         for savedTab in savedTabs {
             // Provide an empty request to prevent a new tab from loading the home screen
             var tab = tabManager.addTab(flushToDisk: false, zombie: true, isPrivate: savedTab.isPrivate)
@@ -130,12 +140,22 @@ class TabManagerStore {
             if savedTab.isSelected {
                 tabToSelect = tab
             }
+            
+            tab.isFxHomeTab ? fxHomeTab = tab : nil
         }
 
         if tabToSelect == nil {
             tabToSelect = tabManager.tabs.first(where: { $0.isPrivate == false })
         }
-
+        
+        if shouldOpenHome {
+            if let firefoxHome = fxHomeTab {
+                tabToSelect = firefoxHome
+            } else {
+                tabToSelect = tabManager.addTab()
+            }
+        }
+        
         return tabToSelect
     }
 
