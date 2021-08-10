@@ -817,7 +817,6 @@ class BrowserViewController: UIViewController {
 
             } else if !url.absoluteString.hasPrefix("\(InternalURL.baseUrl)/\(SessionRestoreHandler.path)") {
                 hideFirefoxHome()
-                urlBar.locationView.reloadButton.reloadButtonState = .disabled
             }
             
         } else if isAboutHomeURL {
@@ -976,6 +975,7 @@ class BrowserViewController: UIViewController {
     func setupMiddleButtonStatus(isLoading: Bool) {
         // No tab
         guard let tab = tabManager.selectedTab else {
+            urlBar.locationView.reloadButton.reloadButtonState = .disabled
             navigationToolbar.updateMiddleButtonState(.search)
             currentMiddleButtonState = .search
             return
@@ -983,6 +983,7 @@ class BrowserViewController: UIViewController {
         
         // Tab with starting page
         if tab.isURLStartingPage {
+            urlBar.locationView.reloadButton.reloadButtonState = .disabled
             navigationToolbar.updateMiddleButtonState(.search)
             currentMiddleButtonState = .search
             return
@@ -990,6 +991,9 @@ class BrowserViewController: UIViewController {
         
         let state: MiddleButtonState = isLoading ? .stop : .reload
         navigationToolbar.updateMiddleButtonState(state)
+        if toolbar != nil {
+            urlBar.locationView.reloadButton.reloadButtonState = isLoading ? .stop : .reload
+        }
         currentMiddleButtonState = state
     }
 
