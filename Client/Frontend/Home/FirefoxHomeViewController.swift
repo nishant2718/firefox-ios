@@ -723,6 +723,7 @@ extension FirefoxHomeViewController {
         recentlySavedCell.collectionView.reloadData()
         recentlySavedCell.setNeedsLayout()
         recentlySavedCell.viewModel = recentlySavedViewModel
+        recentlySavedCell.siteImageHelper = SiteImageHelper(profile: profile)
         
         return recentlySavedCell
     }

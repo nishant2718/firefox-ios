@@ -10,8 +10,8 @@ struct RecentlySavedCollectionCellUX {
     static let bookmarkItemsCutoff: Int = 10
     static let readingListItemsLimit: Int = 5
     static let readingListItemsCutoff: Int = 7
-    static let cellWidth: CGFloat = 134
-    static let cellHeight: CGFloat = 120
+    static let cellWidth: CGFloat = 150
+    static let cellHeight: CGFloat = 110
     static let generalSpacing: CGFloat = 8
     static let sectionInsetSpacing: CGFloat = 4
 }
@@ -39,6 +39,7 @@ class FxHomeRecentlySavedCollectionCell: UICollectionViewCell {
     }
     var readingListItems = [ReadingListItem]()
     var viewModel: FirefoxHomeRecentlySavedViewModel!
+    lazy var siteImageHelper = SiteImageHelper(profile: profile!)
     
     // UI
     lazy var collectionView: UICollectionView = {
@@ -52,6 +53,7 @@ class FxHomeRecentlySavedCollectionCell: UICollectionViewCell {
         collectionView.backgroundColor = UIColor.clear
         collectionView.dataSource = self
         collectionView.delegate = self
+        collectionView.isPrefetchingEnabled = false
         collectionView.register(RecentlySavedCell.self, forCellWithReuseIdentifier: RecentlySavedCell.cellIdentifier)
         
         UIDevice.current.userInterfaceIdiom == .pad ? collectionView.isScrollEnabled = false : nil
@@ -102,8 +104,7 @@ class FxHomeRecentlySavedCollectionCell: UICollectionViewCell {
         
         if let readingList = profile?.readingList.getAvailableRecords().value.successValue?.prefix(RecentlySavedCollectionCellUX.readingListItemsLimit) {
             let readingListItems = Array(readingList)
-            self.readingListItems = RecentItemsHelper.filterStaleItems(recentItems: readingListItems,
-                                                                       since: Date()) as! [ReadingListItem]
+            self.readingListItems = RecentItemsHelper.filterStaleItems(recentItems: readingListItems, since: Date()) as! [ReadingListItem]
         }
     }
     
@@ -123,14 +124,21 @@ extension FxHomeRecentlySavedCollectionCell: UICollectionViewDataSource {
         if let item = dataSource[safe: indexPath.row] {
             let site = Site(url: item.url, title: item.title, bookmarked: true)
             
-            profile?.favicons.getFaviconImage(forSite: site).uponQueue(.main, block: { result in
-                guard let image = result.successValue else { return }
-                cell.heroImage.image = image
-                cell.setNeedsLayout()
-            })
+            cell.itemTitle.text = site.title
+            cell.itemDetails.text = site.tileURL.shortDisplayString
             
-            cell.bookmarkTitle.text = site.title
-            cell.bookmarkDetails.text = site.tileURL.shortDisplayString
+            cell.heroImage.alpha = 0
+            siteImageHelper.fetchImageFor(site: site, imageType: .heroImage, shouldFallback: true) { image in
+                UIView.animate(withDuration: 0.6) {
+                    guard (image != nil) else {
+                        cell.heroImage.alpha = 1
+                        return
+                    }
+                    cell.heroImage.image = image
+                    cell.heroImage.alpha = 1
+                }
+            }
+            
         }
         
         return cell
@@ -179,7 +187,7 @@ extension FxHomeRecentlySavedCollectionCell: UICollectionViewDelegateFlowLayout 
 }
 
 private struct RecentlySavedCellUX {
-    static let generalCornerRadius: CGFloat = 8
+    static let generalCornerRadius: CGFloat = 12
     static let bookmarkTitleFontSize: CGFloat = 17
     static let bookmarkDetailsFontSize: CGFloat = 12
     static let labelsWrapperSpacing: CGFloat = 4
@@ -197,19 +205,21 @@ class RecentlySavedCell: UICollectionViewCell {
     
     // UI
     let heroImage: UIImageView = .build { imageView in
-        imageView.contentMode = .scaleAspectFit
+        imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
         imageView.layer.masksToBounds = true
         imageView.layer.cornerRadius = RecentlySavedCellUX.generalCornerRadius
+        imageView.alpha = 0
     }
     let divider: UIView = .build { view in
         view.backgroundColor = UIColor.theme.homePanel.activityStreamCellDescription
     }
-    let bookmarkTitle: UILabel = .build { label in
+    let itemTitle: UILabel = .build { label in
         label.adjustsFontSizeToFitWidth = false
-        label.font = UIFont.systemFont(ofSize: RecentlySavedCellUX.bookmarkTitleFontSize)
+        label.font = DynamicFontHelper.defaultHelper.preferredFont(withTextStyle: .body, maxSize: 20)
+        label.textColor = .label
     }
-    let bookmarkDetails: UILabel = .build { label in
+    let itemDetails: UILabel = .build { label in
         label.adjustsFontSizeToFitWidth = false
         label.font = UIFont.systemFont(ofSize: RecentlySavedCellUX.bookmarkDetailsFontSize)
     }
@@ -235,35 +245,24 @@ class RecentlySavedCell: UICollectionViewCell {
     }
     
     private func setupLayout() {
+        contentView.backgroundColor = .clear
         contentView.layer.cornerRadius = RecentlySavedCellUX.generalCornerRadius
         contentView.layer.shadowRadius = RecentlySavedCellUX.bookmarkStackViewShadowRadius
         contentView.layer.shadowOffset = CGSize(width: 0, height: RecentlySavedCellUX.bookmarkStackViewShadowOffset)
         contentView.layer.shadowColor = UIColor.theme.homePanel.shortcutShadowColor
         contentView.layer.shadowOpacity = UIColor.theme.homePanel.shortcutShadowOpacity
-        
-        contentView.addSubview(heroImage)
-        contentView.addSubview(divider)
-        contentView.addSubview(bookmarkTitle)
-        contentView.addSubview(bookmarkDetails)
+        contentView.addSubviews(heroImage, itemTitle)
         
         NSLayoutConstraint.activate([
-            heroImage.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 24),
-            heroImage.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            heroImage.heightAnchor.constraint(equalToConstant: 24),
-            heroImage.widthAnchor.constraint(equalToConstant: 24),
+            heroImage.topAnchor.constraint(equalTo: contentView.topAnchor),
+            heroImage.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            heroImage.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            heroImage.heightAnchor.constraint(equalToConstant: 92),
+            heroImage.widthAnchor.constraint(equalToConstant: 110),
             
-            divider.topAnchor.constraint(equalTo: heroImage.bottomAnchor, constant: 24),
-            divider.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            divider.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            divider.heightAnchor.constraint(equalToConstant: 1),
-            
-            bookmarkTitle.topAnchor.constraint(equalTo: divider.topAnchor, constant: 7),
-            bookmarkTitle.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            bookmarkTitle.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
-            
-            bookmarkDetails.topAnchor.constraint(equalTo: bookmarkTitle.bottomAnchor, constant: 2),
-            bookmarkDetails.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            bookmarkDetails.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8)
+            itemTitle.topAnchor.constraint(equalTo: heroImage.bottomAnchor, constant: 8),
+            itemTitle.leadingAnchor.constraint(equalTo: heroImage.leadingAnchor),
+            itemTitle.trailingAnchor.constraint(equalTo: heroImage.trailingAnchor, constant: -2)
         ])
     }
     
@@ -278,9 +277,5 @@ class RecentlySavedCell: UICollectionViewCell {
 }
 
 extension RecentlySavedCell: Themeable {
-    func applyTheme() {
-        contentView.backgroundColor = UIColor.theme.homePanel.recentlySavedBookmarkCellBackground
-        bookmarkDetails.textColor = UIColor.theme.homePanel.activityStreamCellDescription
-        divider.backgroundColor = UIColor.theme.tabTray.background
-    }
+    func applyTheme() { /* Placeholder */}
 }
