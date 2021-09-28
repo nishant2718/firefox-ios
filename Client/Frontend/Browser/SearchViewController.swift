@@ -51,10 +51,13 @@ struct ClientTabsSearchWrapper {
 }
 
 class SearchViewController: SiteTableViewController, KeyboardHelperDelegate, LoaderListener {
+    
+    // MARK: - Properties
     var searchDelegate: SearchViewControllerDelegate?
-    var currentTheme: BuiltinThemeName {
-        return BuiltinThemeName(rawValue: ThemeManager.instance.current.name) ?? .normal
-    }
+    var suggestions: [String]? = []
+    var savedQuery: String = ""
+    var experimental: Variables?
+    static var userAgent: String?
     fileprivate let isPrivate: Bool
     fileprivate var suggestClient: SearchSuggestClient?
     fileprivate var remoteClientTabs = [ClientTabsSearchWrapper]()
@@ -63,114 +66,15 @@ class SearchViewController: SiteTableViewController, KeyboardHelperDelegate, Loa
     fileprivate var filteredOpenedTabs = [Tab]()
     fileprivate var tabManager: TabManager
     
-    // Views for displaying the bottom scrollable search engine list. searchEngineScrollView is the
-    // scrollable container; searchEngineScrollViewContent contains the actual set of search engine buttons.
-    fileprivate let searchEngineContainerView = UIView()
-    fileprivate let searchEngineScrollView = ButtonScrollView()
-    fileprivate let searchEngineScrollViewContent = UIView()
-
-    fileprivate lazy var bookmarkedBadge: UIImage = {
-        return UIImage(named: "bookmark_results")!
-    }()
-    
-    fileprivate lazy var openAndSyncTabBadge: UIImage = {
-        return UIImage(named: "sync_open_tab")!
-    }()
-
-    var suggestions: [String]? = []
-    var savedQuery: String = ""
-    var experimental: Variables?
-    static var userAgent: String?
-
-    
-    init(profile: Profile, isPrivate: Bool, tabManager: TabManager) {
-        self.isPrivate = isPrivate
-        self.tabManager = tabManager
-        self.experimental = Experiments.shared.getVariables(featureId: .search).getVariables("awesome-bar")
-        super.init(profile: profile)
+    var currentTheme: BuiltinThemeName {
+        return BuiltinThemeName(rawValue: ThemeManager.instance.current.name) ?? .normal
     }
-
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    override func viewDidLoad() {
-        view.backgroundColor = UIColor.theme.homePanel.panelBackground
-        let blur = UIVisualEffectView(effect: UIBlurEffect(style: .light))
-        view.addSubview(blur)
-
-        super.viewDidLoad()
-        getCachedTabs()
-        KeyboardHelper.defaultHelper.addDelegate(self)
-
-        searchEngineContainerView.layer.backgroundColor = SearchViewControllerUX.SearchEngineScrollViewBackgroundColor
-        searchEngineContainerView.layer.shadowRadius = 0
-        searchEngineContainerView.layer.shadowOpacity = 100
-        searchEngineContainerView.layer.shadowOffset = CGSize(width: 0, height: -SearchViewControllerUX.SearchEngineTopBorderWidth)
-        searchEngineContainerView.layer.shadowColor = SearchViewControllerUX.SearchEngineScrollViewBorderColor
-        searchEngineContainerView.clipsToBounds = false
-
-        searchEngineScrollView.decelerationRate = UIScrollView.DecelerationRate.fast
-        searchEngineContainerView.addSubview(searchEngineScrollView)
-        view.addSubview(searchEngineContainerView)
-
-        searchEngineScrollViewContent.layer.backgroundColor = UIColor.clear.cgColor
-        searchEngineScrollView.addSubview(searchEngineScrollViewContent)
-
-        layoutTable()
-        layoutSearchEngineScrollView()
-        layoutSearchEngineScrollViewContent()
-
-        blur.snp.makeConstraints { make in
-            make.edges.equalTo(self.view)
-        }
-    
-        searchEngineContainerView.snp.makeConstraints { make in
-            make.left.right.bottom.equalToSuperview()
-        }
-
-        NotificationCenter.default.addObserver(self, selector: #selector(dynamicFontChanged), name: .DynamicFontChanged, object: nil)
-    }
-
-    @objc func dynamicFontChanged(_ notification: Notification) {
-        guard notification.name == .DynamicFontChanged else { return }
-
-        reloadData()
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        reloadSearchEngines()
-        reloadData()
-    }
-
-    fileprivate func layoutSearchEngineScrollView() {
-        let keyboardHeight = KeyboardHelper.defaultHelper.currentState?.intersectionHeightForView(self.view) ?? 0
-        searchEngineScrollView.snp.remakeConstraints { make in
-            make.left.right.top.equalToSuperview()
-            if keyboardHeight == 0 {
-                make.bottom.equalTo(view.safeArea.bottom)
-            } else {
-                make.bottom.equalTo(view).offset(-keyboardHeight)
-            }
+    var searchQuery: String = "" {
+        didSet {
+            // Reload the tableView to show the updated text in each engine.
+            reloadData()
         }
     }
-
-    fileprivate func layoutSearchEngineScrollViewContent() {
-        searchEngineScrollViewContent.snp.remakeConstraints { make in
-            make.center.equalTo(self.searchEngineScrollView).priority(10)
-            //left-align the engines on iphones, center on ipad
-            if UIScreen.main.traitCollection.horizontalSizeClass == .compact {
-                make.left.equalTo(self.searchEngineScrollView).priority(1000)
-            } else {
-                make.left.greaterThanOrEqualTo(self.searchEngineScrollView).priority(1000)
-            }
-            make.right.lessThanOrEqualTo(self.searchEngineScrollView).priority(1000)
-            make.top.equalTo(self.searchEngineScrollView)
-            make.bottom.equalTo(self.searchEngineScrollView)
-        }
-    }
-
     var searchEngines: SearchEngines! {
         didSet {
             suggestClient?.cancelPendingRequest()
@@ -188,7 +92,6 @@ class SearchViewController: SiteTableViewController, KeyboardHelperDelegate, Loa
             reloadSearchEngines()
         }
     }
-
     fileprivate var quickSearchEngines: [OpenSearchEngine] {
         var engines = searchEngines.quickSearchEngines
 
@@ -200,24 +103,159 @@ class SearchViewController: SiteTableViewController, KeyboardHelperDelegate, Loa
 
         return engines!
     }
-
-    var searchQuery: String = "" {
-        didSet {
-            // Reload the tableView to show the updated text in each engine.
-            reloadData()
-        }
+    
+    // Views for displaying the bottom scrollable search engine list. searchEngineScrollView is the
+    // scrollable container; searchEngineScrollViewContent contains the actual set of search engine buttons.
+    fileprivate lazy var searchEngineContainerView: UIView = .build { [weak self] view in
+        guard let self = self else { return }
+        view.layer.backgroundColor = SearchViewControllerUX.SearchEngineScrollViewBackgroundColor
+        view.layer.shadowRadius = 0
+        view.layer.shadowOpacity = 100
+        view.layer.shadowOffset = CGSize(width: 0, height: -SearchViewControllerUX.SearchEngineTopBorderWidth)
+        view.layer.shadowColor = SearchViewControllerUX.SearchEngineScrollViewBorderColor
+        view.clipsToBounds = false
+        view.backgroundColor = .systemIndigo
+        view.addSubview(self.searchEngineScrollView)
+    }
+    fileprivate lazy var searchEngineScrollView: ButtonScrollView = .build { [weak self] scrollView in
+        guard let self = self else { return }
+        scrollView.decelerationRate = UIScrollView.DecelerationRate.fast
+        scrollView.addSubview(self.searchEngineScrollViewContent)
+    }
+    fileprivate lazy var searchEngineScrollViewContent: UIView = .build { view in // the missing bar of engines
+        view.layer.backgroundColor = UIColor.clear.cgColor
+        view.backgroundColor = .systemYellow
+    }
+    fileprivate lazy var bookmarkedBadge: UIImage = {
+        return UIImage(named: "bookmark_results")!
+    }()
+    fileprivate lazy var openAndSyncTabBadge: UIImage = {
+        return UIImage(named: "sync_open_tab")!
+    }()
+    private var constraints = [NSLayoutConstraint]()
+    
+    // MARK: - Inits
+    init(profile: Profile, isPrivate: Bool, tabManager: TabManager) {
+        self.isPrivate = isPrivate
+        self.tabManager = tabManager
+        self.experimental = Experiments.shared.getVariables(featureId: .search).getVariables("awesome-bar")
+        super.init(profile: profile)
     }
 
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    // MARK: - Lifecycles
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        configureView()
+        setupLayout()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        reloadSearchEngines()
+        reloadData()
+    }
+    
     override func reloadData() {
         querySuggestClient()
     }
+    
+    // MARK: - Helpers
+    fileprivate func layoutSearchEngineScrollView() { // viewWillTransition or something
+        let keyboardHeight = KeyboardHelper.defaultHelper.currentState?.intersectionHeightForView(self.view) ?? 0
+        
+//        searchEngineScrollView.snp.remakeConstraints { make in
+//            make.left.right.top.equalToSuperview()
+//            if keyboardHeight == 0 {
+//                make.bottom.equalTo(view.safeArea.bottom)
+//            } else {
+//                make.bottom.equalTo(view).offset(-keyboardHeight)
+//            }
+//        }
+        
+//        var searchEngineScrollViewConstraints = [
+//            searchEngineScrollView.topAnchor.constraint(equalTo: tableView.bottomAnchor),
+//            searchEngineScrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+//            searchEngineScrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+//        ]
+//        if keyboardHeight == 0 {
+//            searchEngineScrollViewConstraints.append(searchEngineScrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor))
+//        } else {
+//            searchEngineScrollViewConstraints.append(searchEngineScrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -keyboardHeight))
+//        }
+//        constraints.append(contentsOf: searchEngineScrollViewConstraints)
+//        NSLayoutConstraint.activate(constraints)
+    }
+    
+    private func configureView() {
+        getCachedTabs()
+        KeyboardHelper.defaultHelper.addDelegate(self)
+        NotificationCenter.default.addObserver(self, selector: #selector(dynamicFontChanged), name: .DynamicFontChanged, object: nil)
+    }
+    
+    private func setupLayout() {
+        view.backgroundColor = UIColor.theme.homePanel.panelBackground
+        view.addSubviews(tableView, searchEngineContainerView)
 
-    fileprivate func layoutTable() {
-        tableView.snp.remakeConstraints { make in
-            make.top.equalTo(self.view.snp.top)
-            make.leading.trailing.equalTo(self.view)
-            make.bottom.equalTo(self.searchEngineScrollView.snp.top)
-        }
+        let tableViewConstraints = [
+            tableView.topAnchor.constraint(equalTo: view.topAnchor),
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tableView.bottomAnchor.constraint(equalTo: searchEngineScrollView.topAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+        ]
+        constraints.append(contentsOf: tableViewConstraints)
+        
+//        let searchEngineContainerViewConstraints = [
+//            searchEngineContainerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+//            searchEngineContainerView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+//            searchEngineContainerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+//        ]
+//        constraints.append(contentsOf: searchEngineContainerViewConstraints)
+        
+//        let keyboardHeight = KeyboardHelper.defaultHelper.currentState?.intersectionHeightForView(self.view) ?? 0
+//        var searchEngineScrollViewConstraints = [
+//            searchEngineScrollView.topAnchor.constraint(equalTo: tableView.bottomAnchor, constant: -20),
+//            searchEngineScrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+//            searchEngineScrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+//        ]
+//        if keyboardHeight == 0 {
+//            searchEngineScrollViewConstraints.append(searchEngineScrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor))
+//        } else {
+//            searchEngineScrollViewConstraints.append(searchEngineScrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor))
+//            searchEngineScrollViewConstraints.append(searchEngineScrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -keyboardHeight))
+//        }
+//        constraints.append(contentsOf: searchEngineScrollViewConstraints)
+//
+//        layoutSearchEngineScrollView()
+//        layoutSearchEngineScrollViewContent()
+        
+        
+        
+//        let searchEngineScrollViewConstraints = [
+//            searchEngineScrollView.topAnchor.constraint(equalTo: )
+//        ]
+//        let keyboardHeight = KeyboardHelper.defaultHelper.currentState?.intersectionHeightForView(self.view) ?? 0
+//        if keyboardHeight == 0 {
+//            searchEngineScrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
+//        } else {
+//            searchEngineScrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -keyboardHeight).isActive = true
+//        }
+//
+//        if UIScreen.main.traitCollection.horizontalSizeClass == .compact {
+//            searchEngineScrollViewContent.leadingAnchor.constraint(equalTo: searchEngineScrollView.leadingAnchor).isActive = true
+//        } else {
+//            searchEngineScrollViewContent.leadingAnchor.constraint(equalTo: searchEngineScrollView.centerXAnchor).isActive = true
+//        }
+        
+        NSLayoutConstraint.activate(constraints)
+    }
+
+    fileprivate func layoutSearchEngineScrollViewContent() { // viewWilltrans or something
+        
     }
 
     func reloadSearchEngines() {
@@ -271,7 +309,12 @@ class SearchViewController: SiteTableViewController, KeyboardHelperDelegate, Loa
             leftEdge = engineButton.snp.right
         }
     }
-
+    
+    @objc func dynamicFontChanged(_ notification: Notification) {
+        guard notification.name == .DynamicFontChanged else { return }
+        reloadData()
+    }
+    
     @objc func didSelectEngine(_ sender: UIButton) {
         // The UIButtons are the same cardinality and order as the array of quick search engines.
         // Subtract 1 from index to account for magnifying glass accessory.
@@ -301,8 +344,7 @@ class SearchViewController: SiteTableViewController, KeyboardHelperDelegate, Loa
         animateSearchEnginesWithKeyboard(state)
     }
 
-    func keyboardHelper(_ keyboardHelper: KeyboardHelper, keyboardDidShowWithState state: KeyboardState) {
-    }
+    func keyboardHelper(_ keyboardHelper: KeyboardHelper, keyboardDidShowWithState state: KeyboardState) { }
 
     func keyboardHelper(_ keyboardHelper: KeyboardHelper, keyboardWillHideWithState state: KeyboardState) {
         animateSearchEnginesWithKeyboard(state)
