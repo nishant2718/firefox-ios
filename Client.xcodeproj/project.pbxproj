@@ -402,8 +402,15 @@
 		8DCD3BCD1ED5B7FA00446D38 /* FxADeepLinkingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DCD3BCC1ED5B7FA00446D38 /* FxADeepLinkingTests.swift */; };
 		9609F4CA26B57CE800F81493 /* CalendarExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9609F4C926B57CE800F81493 /* CalendarExtensions.swift */; };
 		962F394A2672D57A006BDA2A /* RecentItemsHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 962F39492672D57A006BDA2A /* RecentItemsHelper.swift */; };
+		963E11822756771000A77DF6 /* LibraryPanelSectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 963E11812756771000A77DF6 /* LibraryPanelSectionHeaderView.swift */; };
 		966206CD2698DE1E005C0A55 /* FirefoxHomeRecentlySavedViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 966206CC2698DE1E005C0A55 /* FirefoxHomeRecentlySavedViewModel.swift */; };
+		96830138274C228E00DFFB5F /* HistoryPanelV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96830137274C228E00DFFB5F /* HistoryPanelV2.swift */; };
+		9683013A274C263600DFFB5F /* HistoryPanelV2ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96830139274C263600DFFB5F /* HistoryPanelV2ViewModel.swift */; };
+		96895FB12764285D00B0CD47 /* LibraryPanelListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96895FB02764285D00B0CD47 /* LibraryPanelListCell.swift */; };
+		96895FB32764FDC400B0CD47 /* CaseIterableExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96895FB22764FDC400B0CD47 /* CaseIterableExtensions.swift */; };
+		96895FB527655C9400B0CD47 /* HistoryActionables.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96895FB427655C9400B0CD47 /* HistoryActionables.swift */; };
 		9699F77326F39E5100C5FA47 /* SiteImageHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9699F77226F39E5100C5FA47 /* SiteImageHelper.swift */; };
+		96B7D72E274E80B6006F1B22 /* LibraryPanelListSubtitleCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96B7D72D274E80B6006F1B22 /* LibraryPanelListSubtitleCell.swift */; };
 		96D95016270238500079D39D /* Throttler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96D95015270238500079D39D /* Throttler.swift */; };
 		96F627002669B0D100C82340 /* FxHomeRecentlySavedCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96F626FF2669B0D100C82340 /* FxHomeRecentlySavedCollectionCell.swift */; };
 		A83E5AB71C1D993D0026D912 /* UIPasteboardExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A83E5AB61C1D993D0026D912 /* UIPasteboardExtensions.swift */; };
@@ -2646,6 +2653,7 @@
 		9609F4C926B57CE800F81493 /* CalendarExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarExtensions.swift; sourceTree = "<group>"; };
 		962A450E9186BF349E535413 /* sat-Olck */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "sat-Olck"; path = "sat-Olck.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		962F39492672D57A006BDA2A /* RecentItemsHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentItemsHelper.swift; sourceTree = "<group>"; };
+		963E11812756771000A77DF6 /* LibraryPanelSectionHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryPanelSectionHeaderView.swift; sourceTree = "<group>"; };
 		966206CC2698DE1E005C0A55 /* FirefoxHomeRecentlySavedViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirefoxHomeRecentlySavedViewModel.swift; sourceTree = "<group>"; };
 		967AF157275FF4C60099E161 /* tt */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tt; path = tt.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		967AF158275FF4C60099E161 /* tt */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tt; path = tt.lproj/3DTouchActions.strings; sourceTree = "<group>"; };
@@ -2671,10 +2679,16 @@
 		967AF16C275FF4C70099E161 /* tt */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tt; path = tt.lproj/WidgetIntents.strings; sourceTree = "<group>"; };
 		967AF16D275FF4C70099E161 /* tt */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tt; path = tt.lproj/Localizable.strings; sourceTree = "<group>"; };
 		967E47FAA3AD30920D37AF79 /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = cs.lproj/ErrorPages.strings; sourceTree = "<group>"; };
+		96830137274C228E00DFFB5F /* HistoryPanelV2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryPanelV2.swift; sourceTree = "<group>"; };
+		96830139274C263600DFFB5F /* HistoryPanelV2ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryPanelV2ViewModel.swift; sourceTree = "<group>"; };
 		968545D0846EC3C9425305FC /* he */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = he; path = "he.lproj/Default Browser.strings"; sourceTree = "<group>"; };
+		96895FB02764285D00B0CD47 /* LibraryPanelListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryPanelListCell.swift; sourceTree = "<group>"; };
+		96895FB22764FDC400B0CD47 /* CaseIterableExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaseIterableExtensions.swift; sourceTree = "<group>"; };
+		96895FB427655C9400B0CD47 /* HistoryActionables.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryActionables.swift; sourceTree = "<group>"; };
 		9699F77226F39E5100C5FA47 /* SiteImageHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SiteImageHelper.swift; sourceTree = "<group>"; };
 		96A542EFBF40CDFE9AA24E2D /* zh-CN */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-CN"; path = "zh-CN.lproj/PrivateBrowsing.strings"; sourceTree = "<group>"; };
 		96B14F71BAAD012EA8852135 /* ne-NP */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "ne-NP"; path = "ne-NP.lproj/LoginManager.strings"; sourceTree = "<group>"; };
+		96B7D72D274E80B6006F1B22 /* LibraryPanelListSubtitleCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryPanelListSubtitleCell.swift; sourceTree = "<group>"; };
 		96D95015270238500079D39D /* Throttler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Throttler.swift; sourceTree = "<group>"; };
 		96F626FF2669B0D100C82340 /* FxHomeRecentlySavedCollectionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FxHomeRecentlySavedCollectionCell.swift; sourceTree = "<group>"; };
 		970E49B0AC65FFFA0E81DE43 /* he */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = he; path = he.lproj/HistoryPanel.strings; sourceTree = "<group>"; };
@@ -4635,6 +4649,7 @@
 				43446CE92412066500F5C643 /* UIViewControllerExtension.swift */,
 				9609F4C926B57CE800F81493 /* CalendarExtensions.swift */,
 				C81A8F2426D3ED1900EBA539 /* UIWindowExtensions.swift */,
+				96895FB22764FDC400B0CD47 /* CaseIterableExtensions.swift */,
 			);
 			name = Extensions;
 			sourceTree = "<group>";
@@ -5127,6 +5142,26 @@
 			path = Menu;
 			sourceTree = "<group>";
 		};
+		96830136274C218900DFFB5F /* History */ = {
+			isa = PBXGroup;
+			children = (
+				96830137274C228E00DFFB5F /* HistoryPanelV2.swift */,
+				96830139274C263600DFFB5F /* HistoryPanelV2ViewModel.swift */,
+				96895FB427655C9400B0CD47 /* HistoryActionables.swift */,
+			);
+			name = History;
+			sourceTree = "<group>";
+		};
+		96895FAF2764281000B0CD47 /* GeneralizedComponents */ = {
+			isa = PBXGroup;
+			children = (
+				96B7D72D274E80B6006F1B22 /* LibraryPanelListSubtitleCell.swift */,
+				963E11812756771000A77DF6 /* LibraryPanelSectionHeaderView.swift */,
+				96895FB02764285D00B0CD47 /* LibraryPanelListCell.swift */,
+			);
+			name = GeneralizedComponents;
+			sourceTree = "<group>";
+		};
 		C82A94E3269CB74500624AA7 /* FeatureFlags */ = {
 			isa = PBXGroup;
 			children = (
@@ -5367,6 +5402,8 @@
 		D05434F3225FDA3400FDE4EF /* Library */ = {
 			isa = PBXGroup;
 			children = (
+				96895FAF2764281000B0CD47 /* GeneralizedComponents */,
+				96830136274C218900DFFB5F /* History */,
 				F84B22261A09127C00AAB793 /* Library.xcassets */,
 				D0B9483322A03468002F4AA1 /* BookmarkDetailPanel.swift */,
 				59A6839879D615FC1C0D71CE /* BookmarksPanel.swift */,
@@ -8046,7 +8083,9 @@
 				39EF4378260CF5A30011E22E /* AppDelegate+Experiments.swift in Sources */,
 				DF036E43274FD434002E834E /* HistoryHighlightsCell.swift in Sources */,
 				EB9A179C20E69A7F00B12184 /* LegacyDarkTheme.swift in Sources */,
+				963E11822756771000A77DF6 /* LibraryPanelSectionHeaderView.swift in Sources */,
 				DA52E1DA25F5961F0092204C /* TabTrayViewController.swift in Sources */,
+				9683013A274C263600DFFB5F /* HistoryPanelV2ViewModel.swift in Sources */,
 				EB1C84BF212EFFBF001489DF /* BrowserViewController+ReaderMode.swift in Sources */,
 				96D95016270238500079D39D /* Throttler.swift in Sources */,
 				EBA3B2CD2268F27500728BDB /* PhotonActionSheetWidgets.swift in Sources */,
@@ -8082,6 +8121,7 @@
 				23D57E6E25ED6F2700883FAD /* SearchViewController.swift in Sources */,
 				C82A94F2269F68ED00624AA7 /* FeatureFlagsManager.swift in Sources */,
 				3BB50E111D6274CD004B33DF /* FirefoxHomeTopSitesCell.swift in Sources */,
+				96830138274C228E00DFFB5F /* HistoryPanelV2.swift in Sources */,
 				048B4C8624A53F3E001B56E8 /* TodayUX.swift in Sources */,
 				43AB6FA525DC53D30016B015 /* ASLibraryCell.swift in Sources */,
 				1DF4266E251BC46D0086386A /* FaviconFetcher+Non-Bundled.swift in Sources */,
@@ -8157,6 +8197,7 @@
 				E64ED8FA1BC55AE300DAF864 /* UIAlertControllerExtensions.swift in Sources */,
 				282DA4731A68C1E700A406E2 /* OpenSearch.swift in Sources */,
 				D04CD74B216CF86B004FF5B0 /* DevicePickerViewController.swift in Sources */,
+				96895FB32764FDC400B0CD47 /* CaseIterableExtensions.swift in Sources */,
 				E63ED8E11BFD25580097D08E /* LoginListViewController.swift in Sources */,
 				D0625CA8208FC47A0081F3B2 /* BrowserViewController+DownloadQueueDelegate.swift in Sources */,
 				2F44FCC71A9E8CF500FD20CC /* SearchSettingsTableViewController.swift in Sources */,
@@ -8268,7 +8309,9 @@
 				2816F0001B33E05400522243 /* UIConstants.swift in Sources */,
 				EBB89508219398E500EB91A0 /* ContentBlocker+Safelist.swift in Sources */,
 				437A9B6A2681257F00FB41C1 /* InactiveTabViewModel.swift in Sources */,
+				96895FB12764285D00B0CD47 /* LibraryPanelListCell.swift in Sources */,
 				D0B9483422A03468002F4AA1 /* BookmarkDetailPanel.swift in Sources */,
+				96895FB527655C9400B0CD47 /* HistoryActionables.swift in Sources */,
 				3B6889C51D66950E002AC85E /* UIImageColors.swift in Sources */,
 				392ED7E41D0AEF56009D9B62 /* NewTabAccessors.swift in Sources */,
 				D3A9949D1A3686BD008AD1AC /* Tab.swift in Sources */,
@@ -8326,6 +8369,7 @@
 				EBB89506219398E500EB91A0 /* TabContentBlocker.swift in Sources */,
 				966206CD2698DE1E005C0A55 /* FirefoxHomeRecentlySavedViewModel.swift in Sources */,
 				D3E8EF101B97BE69001900FB /* ClearPrivateDataTableViewController.swift in Sources */,
+				96B7D72E274E80B6006F1B22 /* LibraryPanelListSubtitleCell.swift in Sources */,
 				C8954A522729AD9D001C7283 /* Theme.swift in Sources */,
 				C8F457AA1F1FDD9B000CB895 /* BrowserViewController+KeyCommands.swift in Sources */,
 				59A68FD5260B8D520F890F4A /* ReaderPanel.swift in Sources */,

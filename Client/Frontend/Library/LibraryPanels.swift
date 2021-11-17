@@ -93,7 +93,8 @@ class LibraryPanels {
 
         LibraryPanelDescriptor(
             makeViewController: { profile in
-                return HistoryPanel(profile: profile)
+//                return HistoryPanel(profile: profile)
+                return HistoryPanelV2(profile: profile)
             },
             profile: profile,
             imageName: "History",

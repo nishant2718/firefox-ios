@@ -66,3 +66,13 @@ open class Site: Identifiable {
     }
 
 }
+
+extension Site: Hashable {
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+    
+    public static func == (lhs: Site, rhs: Site) -> Bool {
+        lhs.id == rhs.id
+    }
+}

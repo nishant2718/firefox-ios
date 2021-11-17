@@ -166,8 +166,17 @@ class HistoryPanel: SiteTableViewController, LibraryPanel {
         groupedSites = DateGroupedTableData<Site>()
 
         currentFetchOffset = 0
-        fetchData().uponQueue(.main) { result in
+        fetchData().uponQueue(.main) { [weak self] result in
+            guard let self = self else { return }
             if let sites = result.successValue {
+                let somethin = sites.asArray()
+                var groupedItems: [ASGroup<Site>]? = nil
+                
+                SearchTermGroupsManager.getURLGroups(with: self.profile, from: somethin, using: .orderedAscending) { group, filteredItems in
+                    print(group, filteredItems)
+                    groupedItems = group
+                }
+                
                 for site in sites {
                     if let site = site, let latestVisit = site.latestVisit {
                         self.groupedSites.add(site, timestamp: TimeInterval.fromMicrosecondTimestamp(latestVisit.date))
@@ -195,6 +204,7 @@ class HistoryPanel: SiteTableViewController, LibraryPanel {
         return profile.history.getSitesByLastVisit(limit: QueryLimitPerFetch, offset: currentFetchOffset) >>== { result in
             // Force 100ms delay between resolution of the last batch of results
             // and the next time `fetchData()` can be called.
+            print(result)
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
                 self.currentFetchOffset += self.QueryLimitPerFetch
                 self.isFetchInProgress = false

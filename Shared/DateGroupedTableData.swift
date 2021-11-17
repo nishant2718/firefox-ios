@@ -15,10 +15,12 @@ public struct DateGroupedTableData<T: Equatable> {
     let todayTimestamp = getDate(dayOffset: 0).timeIntervalSince1970
     let yesterdayTimestamp = getDate(dayOffset: -1).timeIntervalSince1970
     let lastWeekTimestamp = getDate(dayOffset: -7).timeIntervalSince1970
+    let lastMonthTimeStamp = getDate(dayOffset: -30).timeIntervalSince1970
 
     var today: [(T, TimeInterval)] = []
     var yesterday: [(T, TimeInterval)] = []
     var lastWeek: [(T, TimeInterval)] = []
+    var lastMonth: [(T, TimeInterval)] = []
     var older: [(T, TimeInterval)] = []
 
     public var isEmpty: Bool {
@@ -57,14 +59,12 @@ public struct DateGroupedTableData<T: Equatable> {
 
     public func numberOfItemsForSection(_ section: Int) -> Int {
         switch section {
-        case 0:
-            return today.count
-        case 1:
-            return yesterday.count
-        case 2:
-            return lastWeek.count
-        default:
-            return older.count
+        case 0: return today.count
+        case 1: return yesterday.count
+        case 2: return lastWeek.count
+        case 3: return lastMonth.count
+        case 4: return older.count
+        default: return 0
         }
     }
 
