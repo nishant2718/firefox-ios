@@ -163,8 +163,15 @@ class HistoryPanel: SiteTableViewController, LibraryPanel {
         groupedSites = DateGroupedTableData<Site>()
 
         currentFetchOffset = 0
-        fetchData().uponQueue(.main) { result in
+        fetchData().uponQueue(.main) { [weak self] result in
+            guard let self = self else { return }
             if let sites = result.successValue {
+                let somethin = sites.asArray()
+                
+                SearchTermGroupsManager.getURLGroups(with: self.profile, from: somethin, using: .orderedAscending) { group, filteredItems in
+                    print(group, filteredItems)
+                }
+                
                 for site in sites {
                     if let site = site, let latestVisit = site.latestVisit {
                         self.groupedSites.add(site, timestamp: TimeInterval.fromMicrosecondTimestamp(latestVisit.date))

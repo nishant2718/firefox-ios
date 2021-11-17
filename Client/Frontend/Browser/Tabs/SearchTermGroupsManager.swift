@@ -4,6 +4,7 @@
 
 import Foundation
 import Shared
+import Storage
 import MozillaAppServices
 
 struct ASGroup<T> {
@@ -14,7 +15,7 @@ struct ASGroup<T> {
 
 class SearchTermGroupsManager {
 
-    public static func getURLGroups(with profile: Profile, from urls: [URL], using ordering: ComparisonResult, completion: @escaping ([ASGroup<URL>]?, _ filteredItems: [URL]) -> Void) {
+    public static func getURLGroups(with profile: Profile, from urls: [Site], using ordering: ComparisonResult, completion: @escaping ([ASGroup<Site>]?, _ filteredItems: [Site]) -> Void) {
         getGroups(with: profile, from: urls, using: ordering, completion: completion)
     }
 
@@ -40,8 +41,10 @@ class SearchTermGroupsManager {
     ///   that are not part of a group.
     private static func getGroups<T: Equatable>(with profile: Profile, from items: [T], using ordering: ComparisonResult, completion: @escaping ([ASGroup<T>]?, _ filteredItems: [T]) -> Void) {
 //        ROUX TODO: when URL support is added, fix check
-//        guard (items is [Tab] || items is [URL]) else { return completion(nil, [T]()) }
-        guard (items is [Tab]) else { return completion(nil, [T]()) }
+        guard (items is [Tab] || items is [Site]) else {
+            return completion(nil, [T]())
+        }
+//        guard (items is [Tab]) else { return completion(nil, [T]()) }
 
         let lastTwoWeek = Int64(Date().lastTwoWeek.timeIntervalSince1970)
         profile.places.getHistoryMetadataSince(since: lastTwoWeek).uponQueue(.main) { result in
@@ -105,8 +108,8 @@ class SearchTermGroupsManager {
             innerMetadataLoop: for (searchTerm, historyMetaList) in searchTermMetadata {
                 if historyMetaList.contains(where: { metadata in
                     var stringURL: String = ""
-                    if let item = item as? URL {
-                        stringURL = item.absoluteString
+                    if let item = item as? Site {
+                        stringURL = item.url
 
                     } else if let item = item as? Tab, let url = item.lastKnownUrl?.absoluteString {
                         stringURL = url
