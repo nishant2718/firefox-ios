@@ -68,7 +68,7 @@ enum TabUrlType: String {
     case googleTopSiteFollowOn
 }
 
-class Tab: NSObject {
+class Tab: NSObject, URLChangeDelegate {
 
     static let privateModeKey = "PrivateModeKey"
     fileprivate var _isPrivate: Bool = false
@@ -780,6 +780,14 @@ class Tab: NSObject {
             alert.cancel()
         }
     }
+    
+    /// For anything that needs to be reset on URL navigation, it should be done here.
+    /// - Parameters:
+    ///   - tab: The tab you want to reset properties on.
+    ///   - url: URL
+    func tab(_ tab: Tab, urlDidChangeTo url: URL) {
+        temporaryDocument = nil
+    }
 
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey: Any]?, context: UnsafeMutableRawPointer?) {
         guard let webView = object as? WKWebView, webView == self.webView,
@@ -790,7 +798,8 @@ class Tab: NSObject {
             return
         }
 
-        self.urlDidChangeDelegate?.tab(self, urlDidChangeTo: url)
+//        self.urlDidChangeDelegate?.tab(self, urlDidChangeTo: url)
+        tab(self, urlDidChangeTo: url)
     }
 
     func isDescendentOf(_ ancestor: Tab) -> Bool {
