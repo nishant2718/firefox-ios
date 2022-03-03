@@ -47,6 +47,7 @@ open class Site: Identifiable {
     open var metadata: PageMetadata?
      // Sites may have multiple favicons. We'll return the largest.
     open var icon: Favicon?
+    open var faviconImage: UIImage?
     open var latestVisit: Visit?
     open fileprivate(set) var bookmarked: Bool?
 

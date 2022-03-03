@@ -98,7 +98,12 @@ class LibraryPanels {
 
         LibraryPanelDescriptor(
             makeViewController: { profile, tabManager in
-                return HistoryPanel(profile: profile, tabManager: tabManager)
+                if #available (iOS 14, *) {
+                    return HistoryPanelV2(profile: profile, tabManager: tabManager)
+                } else {
+                    return HistoryPanel(profile: profile, tabManager: tabManager)
+                }
+                
             },
             profile: profile,
             tabManager: tabManager,
