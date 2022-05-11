@@ -7,6 +7,7 @@ import Foundation
 // New keys should follow the name: "[nameOfTheFeature]Key" written with camel case
 public struct PrefsKeys {
     // When this pref is set (by the user) it overrides default behaviour which is just based on app locale.
+    public static let ApplicationCleanlyBackgrounded = "ApplicationCleanlyBackgrounded"
     public static let KeyEnableChinaSyncService = "useChinaSyncService"
     public static let KeyLastRemoteTabSyncTime = "lastRemoteTabSyncTime"
     public static let KeyLastSyncFinishTime = "lastSyncFinishTime"
@@ -17,6 +18,7 @@ public struct PrefsKeys {
     public static let KeyNightModeEnabledDarkTheme = "NightModeEnabledDarkTheme"
     public static let KeyMailToOption = "MailToOption"
     public static let KeyLastVersionNumber = "KeyLastVersionNumber"
+    public static let LatestAppVersionProfileKey = "latestAppVersion"
     public static let HasFocusInstalled = "HasFocusInstalled"
     public static let HasPocketInstalled = "HasPocketInstalled"
     public static let IntroSeen = "IntroViewControllerSeen"

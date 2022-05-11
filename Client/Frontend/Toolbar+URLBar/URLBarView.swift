@@ -192,9 +192,13 @@ class URLBarView: UIView, AlphaDimmable, TopBottomInterchangeable {
     }
 
     var profile: Profile?
-    private var isBottomSearchBar: Bool {
-        BrowserViewController.foregroundBVC().isBottomSearchBar
-    }
+    lazy var isBottomSearchBar: Bool = {
+        guard SearchBarSettingsViewModel.isEnabled, let profile = profile else { return false }
+        return SearchBarSettingsViewModel(prefs: profile.prefs).searchBarPosition == .bottom
+    }()
+//    private var isBottomSearchBar: Bool {
+//        BrowserViewController.foregroundBVC().isBottomSearchBar
+//    }
 
     fileprivate let privateModeBadge = BadgeWithBackdrop(imageName: "privateModeBadge", backdropCircleColor: UIColor.Defaults.MobilePrivatePurple)
     fileprivate let appMenuBadge = BadgeWithBackdrop(imageName: "menuBadge")

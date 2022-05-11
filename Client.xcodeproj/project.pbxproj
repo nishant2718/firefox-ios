@@ -559,6 +559,8 @@
 		9699F77326F39E5100C5FA47 /* SiteImageHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9699F77226F39E5100C5FA47 /* SiteImageHelper.swift */; };
 		96A562A027D6D0E80045144A /* ContileProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96A5629F27D6D0E80045144A /* ContileProvider.swift */; };
 		96A562A327D7B32A0045144A /* Contile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96A562A227D7B32A0045144A /* Contile.swift */; };
+		96C11896282942A20078E38F /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96C11895282942A20078E38F /* SceneDelegate.swift */; };
+		96C118982829497C0078E38F /* AppDelegate+SceneSessions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96C118972829497C0078E38F /* AppDelegate+SceneSessions.swift */; };
 		96D95016270238500079D39D /* Throttler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96D95015270238500079D39D /* Throttler.swift */; };
 		96EB6C3827D821B800A9D159 /* HistoryPanelViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96EB6C3727D821B800A9D159 /* HistoryPanelViewModel.swift */; };
 		96EB6C3C27D82AEA00A9D159 /* HistoryPanel+ContextMenuExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96EB6C3B27D82AEA00A9D159 /* HistoryPanel+ContextMenuExtensions.swift */; };
@@ -2995,6 +2997,8 @@
 		96A562A227D7B32A0045144A /* Contile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Contile.swift; sourceTree = "<group>"; };
 		96A6ACD4276BDD8D00087A51 /* en-US */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "en-US"; path = "en-US.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		96B14F71BAAD012EA8852135 /* ne-NP */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "ne-NP"; path = "ne-NP.lproj/LoginManager.strings"; sourceTree = "<group>"; };
+		96C11895282942A20078E38F /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		96C118972829497C0078E38F /* AppDelegate+SceneSessions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppDelegate+SceneSessions.swift"; sourceTree = "<group>"; };
 		96D95015270238500079D39D /* Throttler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Throttler.swift; sourceTree = "<group>"; };
 		96EB6C3727D821B800A9D159 /* HistoryPanelViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryPanelViewModel.swift; sourceTree = "<group>"; };
 		96EB6C3B27D82AEA00A9D159 /* HistoryPanel+ContextMenuExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HistoryPanel+ContextMenuExtensions.swift"; sourceTree = "<group>"; };
@@ -5658,6 +5662,27 @@
 			path = Messaging;
 			sourceTree = "<group>";
 		};
+		96C1188D2825C11A0078E38F /* AppDelegate */ = {
+			isa = PBXGroup;
+			children = (
+				39EF4377260CF5A30011E22E /* AppDelegate+Experiments.swift */,
+				EB9854FD2422686F0040F24B /* AppDelegate+PushNotifications.swift */,
+				EB98550024226EF60040F24B /* AppDelegate+SyncSentTabs.swift */,
+				D3BE7B451B054F8600641031 /* TestAppDelegate.swift */,
+				F84B21E51A0910F600AAB793 /* AppDelegate.swift */,
+				96C118972829497C0078E38F /* AppDelegate+SceneSessions.swift */,
+			);
+			name = AppDelegate;
+			sourceTree = "<group>";
+		};
+		96C11894282942800078E38F /* SceneDelegate */ = {
+			isa = PBXGroup;
+			children = (
+				96C11895282942A20078E38F /* SceneDelegate.swift */,
+			);
+			name = SceneDelegate;
+			sourceTree = "<group>";
+		};
 		96EB6C3627D821A400A9D159 /* HistoryPanel */ = {
 			isa = PBXGroup;
 			children = (
@@ -6505,11 +6530,8 @@
 		E652F6F91BF66A79007FFDD6 /* Delegates */ = {
 			isa = PBXGroup;
 			children = (
-				F84B21E51A0910F600AAB793 /* AppDelegate.swift */,
-				39EF4377260CF5A30011E22E /* AppDelegate+Experiments.swift */,
-				EB9854FD2422686F0040F24B /* AppDelegate+PushNotifications.swift */,
-				EB98550024226EF60040F24B /* AppDelegate+SyncSentTabs.swift */,
-				D3BE7B451B054F8600641031 /* TestAppDelegate.swift */,
+				96C11894282942800078E38F /* SceneDelegate */,
+				96C1188D2825C11A0078E38F /* AppDelegate */,
 			);
 			name = Delegates;
 			sourceTree = "<group>";
@@ -9068,6 +9090,7 @@
 				D0C95EF6201A55A800E4E51C /* BrowserViewController+UIDropInteractionDelegate.swift in Sources */,
 				D31CF65C1CC1959A001D0BD0 /* PrivilegedRequest.swift in Sources */,
 				8A6A796D27F773550022D6C6 /* FirefoxHomeContextMenuHelper.swift in Sources */,
+				96C11896282942A20078E38F /* SceneDelegate.swift in Sources */,
 				8A2783F1275FFDC50080D29D /* KeyboardPressesHandler.swift in Sources */,
 				D8D33A7D1FBD080300A20A28 /* SnapKitExtensions.swift in Sources */,
 				E650755C1E37F747006961AC /* Swizzling.m in Sources */,
@@ -9115,6 +9138,7 @@
 				D0625CA8208FC47A0081F3B2 /* BrowserViewController+DownloadQueueDelegate.swift in Sources */,
 				8A56955227C68AE00077A89E /* UILabelExtensions.swift in Sources */,
 				2F44FCC71A9E8CF500FD20CC /* SearchSettingsTableViewController.swift in Sources */,
+				96C118982829497C0078E38F /* AppDelegate+SceneSessions.swift in Sources */,
 				8AD3271527E3B45D00EAF033 /* SponsoredTile.swift in Sources */,
 				C8417D222657F0600010B877 /* LibraryViewModel.swift in Sources */,
 				39A359E41BFCCE94006B9E87 /* UserActivityHandler.swift in Sources */,

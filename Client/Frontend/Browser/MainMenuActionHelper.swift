@@ -499,7 +499,7 @@ class MainMenuActionHelper: PhotonActionSheetProtocol, FeatureFlagsProtocol, Can
         let showBadgeForWhatsNew = shouldShowWhatsNew()
         if showBadgeForWhatsNew {
             // Set the version number of the app, so the What's new will stop showing
-            profile.prefs.setString(AppInfo.appVersion, forKey: LatestAppVersionProfileKey)
+            profile.prefs.setString(AppInfo.appVersion, forKey: PrefsKeys.LatestAppVersionProfileKey)
 
             // Redraw the toolbar so the badge hides from the appMenu button.
             delegate?.updateToolbarState()
@@ -521,7 +521,7 @@ class MainMenuActionHelper: PhotonActionSheetProtocol, FeatureFlagsProtocol, Can
     // do not show the What's New. If we do have that value, we compare it to the major version of the running app.
     // If it is different then this is an upgrade, downgrades are not possible, so we can show the What's New page.
     private func shouldShowWhatsNew() -> Bool {
-        guard let latestMajorAppVersion = profile.prefs.stringForKey(LatestAppVersionProfileKey)?.components(separatedBy: ".").first else {
+        guard let latestMajorAppVersion = profile.prefs.stringForKey(PrefsKeys.LatestAppVersionProfileKey)?.components(separatedBy: ".").first else {
             return false // Clean install, never show What's New
         }
 

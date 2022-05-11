@@ -26,7 +26,7 @@ class UpdateViewModel {
     }
 
     static func isCleanInstall(userPrefs: Prefs) -> Bool {
-        if userPrefs.stringForKey(LatestAppVersionProfileKey)?.components(separatedBy: ".").first == nil {
+        if userPrefs.stringForKey(PrefsKeys.LatestAppVersionProfileKey)?.components(separatedBy: ".").first == nil {
             return true
         }
         return false

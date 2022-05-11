@@ -11,12 +11,6 @@ import Account
 
 private let log = Logger.browserLogger
 
-extension UIApplication {
-    var syncDelegate: SyncDelegate {
-        return AppSyncDelegate(app: self)
-    }
-}
-
 /**
  Sent tabs can be displayed not only by receiving push notifications, but by sync.
  Sync will get the list of sent tabs, and try to display any in that list.

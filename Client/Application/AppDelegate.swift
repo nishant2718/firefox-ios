@@ -8,7 +8,6 @@ import AVFoundation
 import XCGLogger
 import MessageUI
 import SDWebImage
-import SyncTelemetry
 import LocalAuthentication
 import SyncTelemetry
 import Sync
@@ -20,58 +19,33 @@ import Account
  import BackgroundTasks
 #endif
 
-private let log = Logger.browserLogger
-
-let LatestAppVersionProfileKey = "latestAppVersion"
-let AllowThirdPartyKeyboardsKey = "settings.allowThirdPartyKeyboards"
-private let InitialPingSentKey = "initialPingSent"
-
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
+    // MARK: - Properties
+
+    private let log = Logger.browserLogger
+
     var window: UIWindow?
-    var browserViewController: BrowserViewController!
+    var orientationLock = UIInterfaceOrientationMask.all
+    var launchOptions: [AnyHashable: Any]?
     var rootViewController: UIViewController!
-    weak var profile: Profile?
+    var browserViewController: BrowserViewController!
     var tabManager: TabManager!
     var applicationCleanlyBackgrounded = true
     var shutdownWebServer: DispatchSourceTimer?
-    var orientationLock = UIInterfaceOrientationMask.all
-    weak var application: UIApplication?
-    var launchOptions: [AnyHashable: Any]?
-
     var receivedURLs = [URL]()
     var telemetry: TelemetryWrapper?
     var adjustHelper: AdjustHelper?
 
+    weak var profile: Profile?
+
+    // MARK: - Application Lifecycle
+
     func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        //
-        // Determine if the application cleanly exited last time it was used. We default to true in
-        // case we have never done this before. Then check if the "ApplicationCleanlyBackgrounded" user
-        // default exists and whether was properly set to true on app exit.
-        //
-        // Then we always set the user default to false. It will be set to true when we the application
-        // is backgrounded.
-        //
-
-        self.applicationCleanlyBackgrounded = true
-
-        let defaults = UserDefaults()
-        if defaults.object(forKey: "ApplicationCleanlyBackgrounded") != nil {
-            self.applicationCleanlyBackgrounded = defaults.bool(forKey: "ApplicationCleanlyBackgrounded")
-        }
-        defaults.set(false, forKey: "ApplicationCleanlyBackgrounded")
+        prepareAppBeforeActive()
 
         // Hold references to willFinishLaunching parameters for delayed app launch
-        self.application = application
         self.launchOptions = launchOptions
-
-        self.window = UIWindow(frame: UIScreen.main.bounds)
-
-        // If the 'Save logs to Files app on next launch' toggle
-        // is turned on in the Settings app, copy over old logs.
-        if DebugSettingsBundleOptions.saveLogsToDocuments {
-            Logger.copyPreviousLogsToDocuments()
-        }
 
         return startApplication(application, withLaunchOptions: launchOptions)
     }
@@ -123,8 +97,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         self.tabManager = TabManager(profile: profile, imageStore: imageStore)
         FeatureFlagsManager.shared.updateNimbusLayer()
 
-        setupRootViewController()
-
         // Add restoration class, the factory that will return the ViewController we
         // will restore with.
 
@@ -132,14 +104,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             if let userInfo = notification.userInfo, let url = userInfo["URL"] as? URL {
                 let title = (userInfo["Title"] as? String) ?? ""
                 profile.readingList.createRecordWithURL(url.absoluteString, title: title, addedBy: UIDevice.current.name)
-            }
-        }
-
-        NotificationCenter.default.addObserver(forName: .DisplayThemeChanged, object: nil, queue: .main) { (notification) -> Void in
-            if !LegacyThemeManager.instance.systemThemeIsOn {
-                self.window?.overrideUserInterfaceStyle = LegacyThemeManager.instance.userInterfaceStyle
-            } else {
-                self.window?.overrideUserInterfaceStyle = .unspecified
             }
         }
 
@@ -151,25 +115,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         log.info("startApplication end")
         return true
-    }
-
-    // TODO: Move to scene controller for iOS 13
-    private func setupRootViewController() {
-        if !LegacyThemeManager.instance.systemThemeIsOn {
-            self.window?.overrideUserInterfaceStyle = LegacyThemeManager.instance.userInterfaceStyle
-        }
-
-        browserViewController = BrowserViewController(profile: self.profile!, tabManager: self.tabManager)
-        browserViewController.edgesForExtendedLayout = []
-
-        let navigationController = UINavigationController(rootViewController: browserViewController)
-        navigationController.delegate = self
-        navigationController.isNavigationBarHidden = true
-        navigationController.edgesForExtendedLayout = UIRectEdge(rawValue: 0)
-        rootViewController = navigationController
-
-        self.window!.rootViewController = rootViewController
-        browserViewController.updateState = .coldStart
     }
 
     func applicationWillTerminate(_ application: UIApplication) {
@@ -197,7 +142,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if let profile = self.profile {
             return profile
         }
-        let p = BrowserProfile(localName: "profile", syncDelegate: application.syncDelegate)
+        let p = BrowserProfile(localName: "profile", syncDelegate: AppSyncDelegate(app: UIApplication.shared))
         self.profile = p
         return p
     }
@@ -207,8 +152,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         var shouldPerformAdditionalDelegateHandling = true
 
         UIScrollView.doBadSwizzleStuff()
-
-        window!.makeKeyAndVisible()
 
         // Now roll logs.
         DispatchQueue.global(qos: DispatchQoS.background.qosClass).async {
@@ -245,7 +188,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 InstallType.set(type: .fresh)
                 InstallType.updateCurrentVersion(version: AppInfo.appVersion)
                 // Profile setup
-                profile.prefs.setString(AppInfo.appVersion, forKey: LatestAppVersionProfileKey)
+                profile.prefs.setString(AppInfo.appVersion, forKey: PrefsKeys.LatestAppVersionProfileKey)
 
             } else if profile.prefs.boolForKey(PrefsKeys.KeySecondRun) == nil {
                 profile.prefs.setBool(true, forKey: PrefsKeys.KeySecondRun)
@@ -332,7 +275,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         //
 
         let defaults = UserDefaults()
-        defaults.set(false, forKey: "ApplicationCleanlyBackgrounded")
+        defaults.set(false, forKey: PrefsKeys.ApplicationCleanlyBackgrounded)
 
         if let profile = self.profile {
             profile._reopen()
@@ -565,6 +508,40 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
     }
+
+    // MARK: - Private helpers
+
+    /// These tasks have been moved to their own functions from `willFinishLaunchingWithOptions`, and kept in that order.
+    /// The order of operations was preserved, but the context as to why it's that way remains.
+    private func prepareAppBeforeActive() {
+        handleCleanBackgrounding()
+        copyLogsIfNeeded()
+    }
+
+    private func handleCleanBackgrounding() {
+        /// Determine if the application cleanly exited last time it was used. We default to true in
+        /// case we have never done this before. Then check if the "ApplicationCleanlyBackgrounded" user
+        /// default exists and whether was properly set to true on app exit.
+        ///
+        /// Then we always set the user default to false. It will be set to true when we the application
+        /// is backgrounded.
+        self.applicationCleanlyBackgrounded = true
+
+        if UserDefaults.standard.object(forKey: PrefsKeys.ApplicationCleanlyBackgrounded) != nil {
+            self.applicationCleanlyBackgrounded = UserDefaults.standard.bool(forKey: PrefsKeys.ApplicationCleanlyBackgrounded)
+        }
+
+        UserDefaults.standard.set(false, forKey: PrefsKeys.ApplicationCleanlyBackgrounded)
+    }
+
+    private func copyLogsIfNeeded() {
+        // If the 'Save logs to Files app on next launch' toggle
+        // is turned on in the Settings app, copy over old logs.
+        if DebugSettingsBundleOptions.saveLogsToDocuments {
+            Logger.copyPreviousLogsToDocuments()
+        }
+    }
+
 }
 
 // MARK: - Root View Controller Animations
@@ -585,13 +562,7 @@ extension AppDelegate: MFMailComposeViewControllerDelegate {
     func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
         // Dismiss the view controller and start the app up
         controller.dismiss(animated: true, completion: nil)
-        _ = startApplication(application!, withLaunchOptions: self.launchOptions)
-    }
-}
-
-extension UIApplication {
-    static var isInPrivateMode: Bool {
-        return BrowserViewController.foregroundBVC().tabManager.selectedTab?.isPrivate ?? false
+        _ = startApplication(UIApplication.shared, withLaunchOptions: self.launchOptions)
     }
 }
 

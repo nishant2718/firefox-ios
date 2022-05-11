@@ -86,8 +86,10 @@ class BrowserViewController: UIViewController {
     weak var chronTabTrayController: ChronologicalTabsViewController?
     var tabTrayViewController: TabTrayViewController?
 
+    /// Initialization properties
     let profile: Profile
     let tabManager: TabManager
+    let windowScene: UISceneSession
     let ratingPromptManager: RatingPromptManager
 
     // Header can contain the top url bar, bottomContainer only containts toolbar
@@ -152,9 +154,10 @@ class BrowserViewController: UIViewController {
 
     fileprivate var shouldShowIntroScreen: Bool { profile.prefs.intForKey(PrefsKeys.IntroSeen) == nil }
 
-    init(profile: Profile, tabManager: TabManager) {
+    init(profile: Profile, tabManager: TabManager, scene: UISceneSession) {
         self.profile = profile
         self.tabManager = tabManager
+        self.windowScene = scene
         self.readerModeCache = DiskReaderModeCache.sharedInstance
         self.ratingPromptManager = RatingPromptManager(profile: profile)
 
