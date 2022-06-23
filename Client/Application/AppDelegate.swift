@@ -15,6 +15,7 @@ import CoreSpotlight
 import UserNotifications
 import Account
 import BackgroundTasks
+import Dip
 
 private let log = Logger.browserLogger
 
@@ -28,6 +29,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var tabManager: TabManager!
     var receivedURLs = [URL]()
     var orientationLock = UIInterfaceOrientationMask.all
+    var container: ServiceProvider?
     weak var profile: Profile?
     private var shutdownWebServer: DispatchSourceTimer?
     private var telemetry: TelemetryWrapper?
@@ -40,6 +42,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                      launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
 
         log.info("startApplication begin")
+
+        /// Many things ahead can't happen without this first, so we'll create our dependency container here.
+        self.container = AppContainer()
 
         appLaunchUtil = AppLaunchUtil()
         appLaunchUtil?.setUpAppLaunchDependencies()
