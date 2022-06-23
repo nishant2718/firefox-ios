@@ -21,7 +21,9 @@ class TabMetadataManager {
     }
 
     init(profile: Profile) {
-        self.profile = profile
+        let container = (UIApplication.shared.delegate as? AppDelegate)?.container
+
+        self.profile = container?.resolve(type: Profile.self) as? Profile
     }
 
     // Only update search term data with valid search term data

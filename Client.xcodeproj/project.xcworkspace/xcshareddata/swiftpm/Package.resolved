@@ -11,6 +11,15 @@
         }
       },
       {
+        "package": "Dip",
+        "repositoryURL": "https://github.com/AliSoftware/Dip.git",
+        "state": {
+          "branch": null,
+          "revision": "7ec008a5c09520b67f07669ad5a753d757f05bbe",
+          "version": null
+        }
+      },
+      {
         "package": "Fuzi",
         "repositoryURL": "https://github.com/nbhasin2/Fuzi.git",
         "state": {
