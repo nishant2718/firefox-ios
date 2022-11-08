@@ -76,7 +76,7 @@ class BrowserViewController: UIViewController {
     var openedUrlFromExternalSource = false
     var passBookHelper: OpenPassBookHelper?
 
-    var contextHintVC: ContextualHintViewController
+    var contextHintVC: ContextualHintViewController?
 
     // To avoid presenting multiple times in same launch when forcing to show
     var hasPresentedUpgrade = false
@@ -181,9 +181,6 @@ class BrowserViewController: UIViewController {
         self.ratingPromptManager = ratingPromptManager
         self.readerModeCache = DiskReaderModeCache.sharedInstance
 
-        let contextViewModel = ContextualHintViewModel(forHintType: .toolbarLocation,
-                                                       with: profile)
-        self.contextHintVC = ContextualHintViewController(with: contextViewModel)
         super.init(nibName: nil, bundle: nil)
         didInit()
     }
@@ -551,6 +548,8 @@ class BrowserViewController: UIViewController {
         }
 
         updateTabCountUsingTabManager(tabManager, animated: false)
+
+        configureContextualHints()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -570,7 +569,7 @@ class BrowserViewController: UIViewController {
     }
 
     private func prepareURLOnboardingContextualHint() {
-        guard contextHintVC.shouldPresentHint() else { return }
+        guard let contextHintVC = contextHintVC else { return }
 
         contextHintVC.configure(
             anchor: urlBar,
@@ -582,7 +581,8 @@ class BrowserViewController: UIViewController {
     }
 
     private func presentContextualHint() {
-        if shouldShowIntroScreen { return }
+        guard let contextHintVC = contextHintVC, shouldShowIntroScreen else { return }
+        
         present(contextHintVC, animated: true)
 
         UIAccessibility.post(notification: .layoutChanged, argument: contextHintVC)
@@ -998,7 +998,9 @@ class BrowserViewController: UIViewController {
             if userHasPressedHomeButton {
                 userHasPressedHomeButton = false
 
-            } else if focusUrlBar && !contextHintVC.shouldPresentHint() {
+            } else if let contextHintVC = contextHintVC,
+                      !contextHintVC.shouldPresentHint(),
+                      focusUrlBar {
                 enterOverlayMode()
             }
 
@@ -1880,6 +1882,17 @@ extension BrowserViewController: HomePanelDelegate {
                 .toolbarLocation:
             self.urlBar.leaveOverlayMode()
         default: break
+        }
+    }
+
+    private func configureContextualHints() {
+        let toolbarContextVM = ContextualHintViewModel(
+            forHintType: .toolbarLocation,
+            with: self.profile
+        )
+
+        if toolbarContextVM.shouldPresentContextualHint() {
+            contextHintVC = ContextualHintViewController(with: toolbarContextVM)
         }
     }
 
