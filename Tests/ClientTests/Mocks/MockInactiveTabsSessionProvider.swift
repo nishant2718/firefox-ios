@@ -3,18 +3,8 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
 
 import Foundation
+@testable import Client
 
-enum TabUpdateState {
-    case coldStart
-    case sameSession
-}
-
-protocol InactiveTabsSessionProviderProtocol {
-    var tabUpdateState: TabUpdateState { get set }
-}
-
-class InactiveTabsSessionProvider: InactiveTabsSessionProviderProtocol {
-
+class MockInactiveTabsSessionProvider: Client.InactiveTabsSessionProviderProtocol {
     var tabUpdateState: TabUpdateState = .coldStart
-
 }

@@ -64,11 +64,10 @@ class InactiveTabViewModel {
     var inactiveTabs = [Tab]()
     var activeTabs = [Tab]()
 
-    private let inactiveTabsSessionProvider: InactiveTabsSessionProvider
+    private var inactiveTabsSessionProvider: InactiveTabsSessionProviderProtocol
 
-    init(sessionManager: AppSessionManager = AppContainer.shared.resolve()) {
+    init(sessionManager: AppSessionProvider = AppContainer.shared.resolve()) {
         self.inactiveTabsSessionProvider = sessionManager.inactiveTabsSessionProvider
-
     }
 
     func updateInactiveTabs(with selectedTab: Tab?, tabs: [Tab]) {

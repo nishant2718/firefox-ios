@@ -5,7 +5,8 @@
 import Foundation
 
 protocol AppSessionProvider {
-    var inactiveTabsSessionProvider: InactiveTabsSessionProvider { get }
+    var inactiveTabsSessionProvider: InactiveTabsSessionProviderProtocol { get set }
+    var launchSessionProvider: LaunchSessionProviderProtocol { get set }
 }
 
 /// `AppSessionManager` exists to track, mutate and (sometimes) persist session related properties. Each category of
@@ -15,11 +16,14 @@ protocol AppSessionProvider {
 /// into a smörgåsbord of countless properties. Consider all options before adding it here, but if it makes sense, go for it.
 struct AppSessionManager: AppSessionProvider {
 
-    var inactiveTabsSessionProvider: InactiveTabsSessionProvider
+    var inactiveTabsSessionProvider: InactiveTabsSessionProviderProtocol
+    var launchSessionProvider: LaunchSessionProviderProtocol
 
     init(
-        inactiveTabsSessionProvider: InactiveTabsSessionProvider = InactiveTabsSessionProvider()
+        inactiveTabsSessionProvider: InactiveTabsSessionProvider = InactiveTabsSessionProvider(),
+        launchSessionProvider: LaunchSessionProvider = LaunchSessionProvider()
     ) {
         self.inactiveTabsSessionProvider = inactiveTabsSessionProvider
+        self.launchSessionProvider = launchSessionProvider
     }
 }

@@ -10,18 +10,16 @@ import UIKit
 let LatestAppVersionProfileKey = "latestAppVersion"
 
 class AppDelegate: UIResponder, UIApplicationDelegate {
+    private let log = Logger.browserLogger
 
     var notificationCenter: NotificationProtocol = NotificationCenter.default
     var orientationLock = UIInterfaceOrientationMask.all
-
-    private let log = Logger.browserLogger
 
     lazy var profile: Profile = BrowserProfile(
         localName: "profile",
         syncDelegate: UIApplication.shared.syncDelegate,
         isNewHistoryPlacesAPI: UserDefaults.standard.bool(forKey: PrefsKeys.NewPlacesAPIDefaultKey)
     )
-
     lazy var tabManager: TabManager = TabManager(
         profile: profile,
         imageStore: DiskImageStore(
@@ -29,9 +27,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             namespace: "TabManagerScreenshots",
             quality: UIConstants.ScreenshotQuality)
     )
-
     lazy var themeManager: ThemeManager = DefaultThemeManager(appDelegate: self)
-    lazy private var ratingPromptManager: RatingPromptManager = AppContainer.shared.resolve()
+    lazy var ratingPromptManager = RatingPromptManager(profile: profile)
+    var appSessionManager: AppSessionProvider = AppSessionManager()
+
     private var shutdownWebServer: DispatchSourceTimer?
     private var webServerUtil: WebServerUtil?
     private var appLaunchUtil: AppLaunchUtil?
