@@ -150,6 +150,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             widgetManager?.writeWidgetKitTopSites()
         }
     }
+
+    private func didBecomeActiveWithoutAScene() {
+        guard !UIApplication.shared.connectedScenes.isEmpty else {
+            SentryIntegration.shared.send(
+                message: "The application is active, but a scene isn't available yet!",
+                severity: .fatal)
+
+            return
+        }
+    }
 }
 
 extension AppDelegate: Notifiable {
@@ -165,8 +175,11 @@ extension AppDelegate: Notifiable {
         switch notification.name {
         case UIApplication.didBecomeActiveNotification:
             applicationDidBecomeActive(UIApplication.shared)
+            didBecomeActiveWithoutAScene()
+
         case UIApplication.willResignActiveNotification:
             applicationWillResignActive(UIApplication.shared)
+
         case UIApplication.didEnterBackgroundNotification:
             applicationDidEnterBackground(UIApplication.shared)
 
