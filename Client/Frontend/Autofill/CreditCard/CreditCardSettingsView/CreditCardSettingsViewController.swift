@@ -54,7 +54,7 @@ class CreditCardSettingsViewController: UIViewController, Themeable {
     override func viewDidLoad() {
         super.viewDidLoad()
         viewSetup()
-        listenForThemeChange()
+        listenForThemeChange(view)
         applyTheme()
     }
 
