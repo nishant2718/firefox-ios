@@ -343,9 +343,6 @@
 /* When a user taps and holds on an item from the Recently Visited section, this label will appear indicating the option to remove that item. */
 "FirefoxHome.RecentHistory.Remove" = "Odstrániť";
 
-/* Label showing how many sites there is in a search group. %d represents a number */
-"FirefoxHomepage.Common.SitesCount.v101" = "Stránky: %d";
-
 /* The title for the Settings context menu action for sponsored tiles in the Firefox home page shortcuts section. Clicking this brings the users to the Shortcuts Settings. */
 "FirefoxHomepage.ContextualMenu.Settings.v101" = "Nastavenia";
 
@@ -1028,7 +1025,7 @@
 "RecentlyClosedTabsPanel.Title" = "Nedávno zatvorené karty";
 
 /* More button text for Recently Saved items at the home page. */
-"RecentlySaved.Actions.More" = "Zobraziť všetko";
+"RecentlySaved.Actions.More" = "Zobraziť všetky";
 
 /* Accessibility Label for the tab toolbar Reload button */
 "Reload" = "Znova načítať";
