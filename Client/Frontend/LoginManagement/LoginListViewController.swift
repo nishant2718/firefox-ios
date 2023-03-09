@@ -49,7 +49,7 @@ class LoginListViewController: SensitiveViewController, Themeable {
         webpageNavigationHandler: ((_ url: URL?) -> Void)?,
         completion: @escaping ((LoginListViewController?) -> Void)
     ) {
-        AppAuthenticator().authenticateWithDeviceOwnerAuthentication { result in
+        AppAuthenticator().authenticateWithDeviceOwnerAuthentication(screen: .password) { result in
             let viewController: LoginListViewController?
             switch result {
             case .success:
@@ -78,7 +78,9 @@ class LoginListViewController: SensitiveViewController, Themeable {
         self.webpageNavigationHandler = webpageNavigationHandler
         self.themeManager = themeManager
         self.notificationCenter = notificationCenter
-        super.init(nibName: nil, bundle: nil)
+
+        super.init(protectedScreen: .password)
+
         listenForThemeChange(view)
     }
 

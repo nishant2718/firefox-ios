@@ -11,13 +11,28 @@ class SensitiveViewController: UIViewController {
     private var isAuthenticated = false
     private var willEnterForegroundNotificationObserver: NSObjectProtocol?
     private var didEnterBackgroundNotificationObserver: NSObjectProtocol?
+    var protectedScreen: ProtectedScreen
+    var appAuthenticator: AppAuthenticationProtocol
+
+    init(protectedScreen: ProtectedScreen,
+         appAuthenticator: AppAuthenticationProtocol = AppAuthenticator()
+    ) {
+        self.protectedScreen = protectedScreen
+        self.appAuthenticator = appAuthenticator
+
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         willEnterForegroundNotificationObserver = NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { [self] notification in
             if !isAuthenticated {
-                AppAuthenticator().authenticateWithDeviceOwnerAuthentication { [self] result in
+                appAuthenticator.authenticateWithDeviceOwnerAuthentication(screen: protectedScreen) { [self] result in
                     switch result {
                     case .success:
                         isAuthenticated = false

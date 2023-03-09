@@ -11,18 +11,21 @@ import Common
 /// "Sensitive" refers to a screen with sensitive user data. Typically, this data is hidden behind `LocalAuthentication` and
 /// a user must authenticate each time.
 class SensitiveHostingController<Content>: UIHostingController<Content> where Content: View {
-    private var appAuthenticator: AppAuthenticationProtocol?
+    private var appAuthenticator: AppAuthenticationProtocol
     private var blurredOverlay: UIImageView?
     private var isAuthenticated = false
-    var notificationCenter: NotificationProtocol?
+    var notificationCenter: NotificationProtocol
+    var protectedScreen: ProtectedScreen
 
     init(rootView: Content,
+         protectedScreen: ProtectedScreen,
          notificationCenter: NotificationProtocol = NotificationCenter.default,
          localAuthenticator: AppAuthenticationProtocol = AppAuthenticator()) {
-        super.init(rootView: rootView)
-
+        self.protectedScreen = protectedScreen
         self.notificationCenter = notificationCenter
         self.appAuthenticator = localAuthenticator
+
+        super.init(rootView: rootView)
 
         setupNotifications(forObserver: self, observing: [UIApplication.didEnterBackgroundNotification,
                                                           UIApplication.willEnterForegroundNotification])
@@ -33,7 +36,7 @@ class SensitiveHostingController<Content>: UIHostingController<Content> where Co
     }
 
     deinit {
-        notificationCenter?.removeObserver(self)
+        notificationCenter.removeObserver(self)
     }
 
     // MARK: - Private helpers
@@ -61,7 +64,7 @@ class SensitiveHostingController<Content>: UIHostingController<Content> where Co
     }
 
     private func configureOverlay() {
-        appAuthenticator?.authenticateWithDeviceOwnerAuthentication { [self] result in
+        appAuthenticator.authenticateWithDeviceOwnerAuthentication(screen: protectedScreen) { [self] result in
             switch result {
             case .success:
                 isAuthenticated = true
@@ -82,10 +85,10 @@ class SensitiveHostingController<Content>: UIHostingController<Content> where Co
     private func setupNotifications(forObserver observer: Any,
                                     observing notifications: [Notification.Name]) {
         notifications.forEach {
-            notificationCenter?.addObserver(observer,
-                                            selector: #selector(handleNotifications),
-                                            name: $0,
-                                            object: nil)
+            notificationCenter.addObserver(observer,
+                                           selector: #selector(handleNotifications),
+                                           name: $0,
+                                           object: nil)
         }
     }
 

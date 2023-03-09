@@ -56,7 +56,8 @@ class CreditCardSettingsViewController: UIViewController, Themeable {
         let creditCardEditView = CreditCardEditView(viewModel: viewModel.addEditViewModel,
                                                     removeButtonColor: themeManager.currentTheme.colors.textWarning.color,
                                                     borderColor: themeManager.currentTheme.colors.borderPrimary.color)
-        self.creditCardAddEditView = SensitiveHostingController(rootView: creditCardEditView)
+        self.creditCardAddEditView = SensitiveHostingController(rootView: creditCardEditView,
+                                                                protectedScreen: .editCreditCard)
 
         super.init(nibName: nil, bundle: nil)
     }
@@ -174,7 +175,7 @@ class CreditCardSettingsViewController: UIViewController, Themeable {
     private func updateStateForEditView() {
         guard appAuthenticator.canAuthenticateDeviceOwner() else { return }
 
-        appAuthenticator.authenticateWithDeviceOwnerAuthentication { result in
+        appAuthenticator.authenticateWithDeviceOwnerAuthentication(screen: .editCreditCard) { result in
             switch result {
             case .success:
                 self.creditCardAddEditView.view.isHidden = false

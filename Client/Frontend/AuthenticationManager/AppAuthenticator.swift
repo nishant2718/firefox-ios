@@ -10,13 +10,22 @@ enum AuthenticationError: Error {
     case failedAutentication(message: String)
 }
 
+/// `ProtectedScreen` signifies any screen in the app that needs biometric authentication to view it.
+///
+/// This is typically used in conjunction with `AppAuthenticator`.
+enum ProtectedScreen {
+    case editCreditCard, password
+}
+
 protocol AppAuthenticationProtocol {
-    func authenticateWithDeviceOwnerAuthentication(_ completion: @escaping (Result<Void, AuthenticationError>) -> Void)
+    func authenticateWithDeviceOwnerAuthentication(screen: ProtectedScreen,
+                                                   _ completion: @escaping (Result<Void, AuthenticationError>) -> Void)
     func canAuthenticateDeviceOwner() -> Bool
 }
 
 class AppAuthenticator: AppAuthenticationProtocol {
-    func authenticateWithDeviceOwnerAuthentication(_ completion: @escaping (Result<Void, AuthenticationError>) -> Void) {
+    func authenticateWithDeviceOwnerAuthentication(screen: ProtectedScreen,
+                                                   _ completion: @escaping (Result<Void, AuthenticationError>) -> Void) {
         // Get a fresh context for each login. If you use the same context on multiple attempts
         //  (by commenting out the next line), then a previously successful authentication
         //  causes the next policy evaluation to succeed without testing biometry again.
@@ -25,10 +34,12 @@ class AppAuthenticator: AppAuthenticationProtocol {
 
         context.localizedFallbackTitle = .AuthenticationEnterPasscode
 
+        let authReasonString = getAuthenticationReasonFor(screen: screen, with: context.biometryType)
+
         // First check if we have the needed hardware support.
         var error: NSError?
         if context.canEvaluatePolicy(.deviceOwnerAuthentication, error: &error) {
-            context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: .Settings.Passwords.FingerPrintReason) { success, error in
+            context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: authReasonString) { success, error in
                 if success {
                     DispatchQueue.main.async {
                         completion(.success(()))
@@ -48,5 +59,24 @@ class AppAuthenticator: AppAuthenticationProtocol {
 
     func canAuthenticateDeviceOwner() -> Bool {
         return LAContext().canEvaluatePolicy(.deviceOwnerAuthentication, error: nil)
+    }
+
+    private func getAuthenticationReasonFor(screen: ProtectedScreen, with context: LABiometryType) -> String {
+        var authReason = ""
+
+        switch (screen, context) {
+        case (.editCreditCard, .touchID):
+            authReason = .Biometry.Screen.EditCreditCardWithFingerprint
+        case (.editCreditCard, .faceID):
+            authReason = .Biometry.Screen.EditCreditCardWithFaceId
+        case (.password, .touchID):
+            authReason = .Biometry.Screen.PasswordsWithFingerprint
+        case (.password, .faceID):
+            authReason = .Biometry.Screen.PasswordsWithFaceId
+
+        default: break
+        }
+
+        return authReason
     }
 }

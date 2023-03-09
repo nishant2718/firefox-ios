@@ -9,6 +9,7 @@ import XCTest
 @testable import Client
 
 class SensitiveHostingControllerTests: XCTestCaseRootViewController {
+    let protectedScreen: ProtectedScreen = .editCreditCard
     var mockNotificationCenter: MockNotificationCenter!
     var mockAppAuthenticator: MockAppAuthenticator!
 
@@ -28,6 +29,7 @@ class SensitiveHostingControllerTests: XCTestCaseRootViewController {
 
     func createSubject() -> SensitiveHostingController<EmptyView> {
         let sensitiveHostingController = SensitiveHostingController(rootView: EmptyView(),
+                                                                    protectedScreen: protectedScreen,
                                                                     notificationCenter: mockNotificationCenter,
                                                                     localAuthenticator: mockAppAuthenticator)
         trackForMemoryLeaks(sensitiveHostingController)

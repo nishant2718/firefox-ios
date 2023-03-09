@@ -7,12 +7,15 @@ import Foundation
 
 class MockAppAuthenticator: AppAuthenticationProtocol {
     var shouldAuthenticateDeviceOwner = true
+    var shouldSucceed = true
+    var protectedScreen: ProtectedScreen = .editCreditCard
+
     func canAuthenticateDeviceOwner() -> Bool {
         return shouldAuthenticateDeviceOwner
     }
 
-    var shouldSucceed = true
-    func authenticateWithDeviceOwnerAuthentication(_ completion: @escaping (Result<Void, AuthenticationError>) -> Void) {
+    func authenticateWithDeviceOwnerAuthentication(screen: ProtectedScreen,
+                                                   _ completion: @escaping (Result<Void, AuthenticationError>) -> Void) {
         if shouldSucceed {
             completion(.success(()))
         } else {

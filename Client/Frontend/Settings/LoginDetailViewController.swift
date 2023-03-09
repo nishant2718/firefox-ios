@@ -96,7 +96,7 @@ class LoginDetailViewController: SensitiveViewController, Themeable {
         self.webpageNavigationHandler = webpageNavigationHandler
         self.themeManager = themeManager
         self.notificationCenter = notificationCenter
-        super.init(nibName: nil, bundle: nil)
+        super.init(protectedScreen: .password)
 
         NotificationCenter.default.addObserver(self, selector: #selector(dismissAlertController), name: UIApplication.didEnterBackgroundNotification, object: nil)
     }
