@@ -77,7 +77,7 @@
 "Amazon" = "Amazon";
 
 /* Authentication prompt title */
-"Authentication required" = "Lyp mirëfilltësim";
+"Authentication required" = "Lypset mirëfilltësim";
 
 /* Accessibility label for the Back button in the tab toolbar. */
 "Back" = "Mbrapsht";
@@ -342,6 +342,9 @@
 
 /* When a user taps and holds on an item from the Recently Visited section, this label will appear indicating the option to remove that item. */
 "FirefoxHome.RecentHistory.Remove" = "Hiqe";
+
+/* Label showing how many pages there is in a search group. %d represents a number */
+"FirefoxHomepage.Common.PagesCount.v112" = "Faqe: %d";
 
 /* The title for the Settings context menu action for sponsored tiles in the Firefox home page shortcuts section. Clicking this brings the users to the Shortcuts Settings. */
 "FirefoxHomepage.ContextualMenu.Settings.v101" = "Rregullime";
@@ -1216,9 +1219,6 @@
 /* The placeholder for URL Field when saving a custom search engine */
 "Settings.AddCustomEngine.URLPlaceholder" = "URL (Zëvendësojeni Kërkesën me %s)";
 
-/* Label used as an item in Settings screen. When touched, it will take user to credit card settings page to that will allows to add or modify saved credit cards to allow for autofill in a webpage. */
-"Settings.AutofillCreditCard.Title.v110" = "Vetëplotëso Hollësi Karte Krediti";
-
 /* Button in Data Management that clears all items. */
 "Settings.ClearAllWebsiteData.Clear.Button" = "Spastro Krejt të Dhënat e Sajtit";
 
@@ -1577,7 +1577,7 @@
 "Settings.TrackingProtection.Alert.Button" = "OK, e mora vesh";
 
 /* Decription for the tracker protection alert. */
-"Settings.TrackingProtection.Alert.Description" = "Nëse një sajt nuk funksionon si pritej, prekni mburojën te shtylla e adresave dhe çaktivizoni Mbrojtjen e Thelluar Nga Gjurmimet për atë faqe.";
+"Settings.TrackingProtection.Alert.Description" = "Nëse një sajt nuk funksionon si pritej, prekni drynin te shtylla e adresave dhe çaktivizoni Mbrojtjen e Thelluar Nga Gjurmimet për atë faqe.";
 
 /* Title for the tracker protection alert. */
 "Settings.TrackingProtection.Alert.Title" = "Kini mendjen!";
@@ -1592,7 +1592,7 @@
 "Settings.TrackingProtection.ProtectionCellFooter" = "Ul numrin e reklamave të qepura enkas për ju dhe ndihmon të ndalen gjurmimi i shfletimeve tuaja nga reklamues.";
 
 /* Footer information for tracker protection level. */
-"Settings.TrackingProtection.ProtectionLevel.Footer" = "Nëse një sajt nuk funksionon si pritej, prekni mburojën te shtylla e adresave dhe çaktivizoni Mbrojtjen e Thelluar Nga Gjurmimet për atë faqe.";
+"Settings.TrackingProtection.ProtectionLevel.Footer" = "Nëse një sajt nuk funksionon si pritej, prekni drynin te shtylla e adresave dhe çaktivizoni Mbrojtjen e Thelluar Nga Gjurmimet për atë faqe.";
 
 /* Description for standard level tracker protection */
 "Settings.TrackingProtection.ProtectionLevelStandard.Description" = "Lejon disa reklama gjurmimi, kështu që sajtet punojnë si pritet.";
