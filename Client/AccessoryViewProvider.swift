@@ -15,6 +15,7 @@ class AccessoryViewProvider: UIView, Themeable {
     var themeObserver: NSObjectProtocol?
     var notificationCenter: NotificationProtocol
     private var showCreditCard = false
+    private let throttler = Throttler(seconds: 1.0)
 
     // stubs - these closures will be given as selectors in a future task
     var previousClosure: (() -> Void)?
@@ -107,18 +108,22 @@ class AccessoryViewProvider: UIView, Themeable {
         listenForThemeChange(self)
         setupLayout()
         applyTheme()
+
+        notificationCenter.addObserver(self, selector: #selector(reloadViewForCardAccessory), name: .ShowCreditCardAccessory, object: nil)
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func reloadViewForCardAccessory() {
-        showCreditCard = true
+    @objc func reloadViewForCardAccessory() {
+//        throttler.throttle { [self] in
+            showCreditCard = true
 
-        setNeedsLayout()
-        setupLayout()
-        layoutIfNeeded()
+            setNeedsLayout()
+            setupLayout()
+            layoutIfNeeded()
+//        }
     }
 
     private func setupLayout() {

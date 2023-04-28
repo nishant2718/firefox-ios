@@ -1904,7 +1904,9 @@ extension BrowserViewController: LegacyTabDelegate {
             creditCardHelper.foundFieldValues = { fieldValues in
                 guard let tabWebView = tab.webView as? TabWebView else { return }
 
-                tabWebView.accessoryView?.reloadViewForCardAccessory()
+                NotificationCenter.default.post(name: .ShowCreditCardAccessory, object: nil)
+
+//                tabWebView.accessoryView?.reloadViewForCardAccessory()
 
                 // stub. Action will be to present a half sheet, https://mozilla-hub.atlassian.net/browse/FXIOS-6111
                 tabWebView.accessoryView?.savedCardsClosure = { }

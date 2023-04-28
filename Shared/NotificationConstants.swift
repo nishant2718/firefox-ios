@@ -102,4 +102,5 @@ extension Notification.Name {
     public static let HistoryUpdated = Notification.Name("HistoryUpdated")
 
     public static let PresentIntroView = Notification.Name("PresentIntroView")
+    public static let ShowCreditCardAccessory = Notification.Name("ShowCreditCardAccessory")
 }
